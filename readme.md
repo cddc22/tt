@@ -207,12 +207,12 @@ The performance of these models are included in the paper.
 If you find this work useful, please consider citing our paper:
 
 ```
-@misc{cui2023milipoint,
-      title={MiliPoint: A Point Cloud Dataset for mmWave Radar}, 
-      author={Han Cui and Shu Zhong and Jiacheng Wu and Zichao Shen and Naim Dahnoun and Yiren Zhao},
-      year={2023},
-      eprint={2309.13425},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@inproceedings{cui2023milipoint,
+ author = {Cui, Han and Zhong, Shu and Wu, Jiacheng and Shen, Zichao and Dahnoun, Naim and Zhao, Yiren},
+ booktitle = {Advances in Neural Information Processing Systems},
+ pages = {62713--62726},
+ title = {MiliPoint: A Point Cloud Dataset for mmWave Radar},
+ volume = {36},
+ year = {2023}
 }
 ```
