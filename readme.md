@@ -26,8 +26,8 @@ MiliPoint
     ├─2.pkl
     ├─...
 ```
-
 The actions involved in this study are shown in this [video](https://www.youtube.com/watch?v=cZu9u_jodyU). 
+
 ---
 
 ## Simple Usage: Using only the Dataset
