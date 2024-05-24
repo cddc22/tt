@@ -27,9 +27,10 @@ MiliPoint
     ├─...
 ```
 
+The actions involved in this study are shown in this [video](https://www.youtube.com/watch?v=cZu9u_jodyU). 
 ---
 
-## Simple Usage: Using on only the Dataset
+## Simple Usage: Using only the Dataset
 
 We provide a direct `pip` installation by running the following
 
