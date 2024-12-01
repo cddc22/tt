@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import torch_geometric
 import torch_geometric.transforms as T
-from torch_geometric.nn import MLP, PointNetConv, fps, global_mean_pool, radius, knn
+from torch_geometric.nn import MLP, PointNetConv, fps, global_mean_pool, radius, knn, ChebConv
 
 class SAModule(torch.nn.Module):
     def __init__(self, ratio, r, nn):
@@ -53,7 +53,7 @@ class TransitionDown(torch.nn.Module):
         return out, sub_pos, sub_batch
 
 
-class PointNet(torch.nn.Module):
+class PointNetCheb(torch.nn.Module):
     def __init__(self, info=None):
         super().__init__()
         self.num_classes = info['num_classes']
@@ -64,6 +64,10 @@ class PointNet(torch.nn.Module):
         self.sa2_module = SAModule(0.25, 0.4, MLP([256 + 3, 128, 128, 256]))
         self.transition_down2 = TransitionDown(in_channels=256, out_channels=512)
         self.sa3_module = GlobalSAModule(MLP([512 + 3, 256, 512, 1024]))
+
+        # 引入 ChebNet 层
+        self.cheb_conv1 = ChebConv(256, 256, K=3)  # 调整输入特征维度
+        self.cheb_conv2 = ChebConv(512, 512, K=3)  # 调整输入特征维度
 
         if self.num_classes is None:
             self.num_points = info['num_keypoints']
@@ -83,9 +87,21 @@ class PointNet(torch.nn.Module):
         sa0_out = (x, x, batch)
         sa1_out = self.sa1_module(*sa0_out)
         sa1_down = self.transition_down1(*sa1_out)  # 添加降采样
-        sa2_out = self.sa2_module(*sa1_down)
+
+        # 应用 ChebNet 层
+        x, pos, batch = sa1_down
+        edge_index = knn(pos, pos, k=16, batch_x=batch, batch_y=batch)
+        x = self.cheb_conv1(x, edge_index)
+
+        sa2_out = self.sa2_module(x, pos, batch)
         sa2_down = self.transition_down2(*sa2_out)  # 添加降采样
-        sa3_out = self.sa3_module(*sa2_down)
+
+        # 再次应用 ChebNet 层
+        x, pos, batch = sa2_down
+        edge_index = knn(pos, pos, k=16, batch_x=batch, batch_y=batch)
+        x = self.cheb_conv2(x, edge_index)
+
+        sa3_out = self.sa3_module(x, pos, batch)
 
         x, pos, batch = sa3_out
 

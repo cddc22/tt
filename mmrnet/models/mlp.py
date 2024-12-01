@@ -37,3 +37,6 @@ class MLP(torch.nn.Module):
         return y
 
 
+if __name__=='__main__':
+    model = MLP()
+    print(model)
